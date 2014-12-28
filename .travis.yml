@@ -1,0 +1,10 @@
+language: scala
+scala:
+   - 2.10.4
+before_script:
+   - cd module-code/
+script:
+   - sbt ++$TRAVIS_SCALA_VERSION compile
+   - sbt ++$TRAVIS_SCALA_VERSION test
+jdk:
+   - oraclejdk8
