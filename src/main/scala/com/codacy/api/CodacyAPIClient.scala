@@ -14,7 +14,9 @@ class CodacyAPIClient {
   val client: WSClient = new NingWSClient(new AsyncHttpClient().getConfig)
 
   def postCoverageFile(projectToken: String, commitUuid: String, file: File): Either[String, String] = {
-    val url = s"https://www.codacy.com/api/coverage/$projectToken/$commitUuid"
+    //quick-fix load codacy instance from environment instead of only hardcoded.
+    val host = sys.env.get("CODACY_INSTANCE_URL").getOrElse("https://www.codacy.com/")
+    val url = s"$host/api/coverage/$projectToken/$commitUuid"
 
     val responseOpt = Try {
       val future = client.url(url).post(file)
