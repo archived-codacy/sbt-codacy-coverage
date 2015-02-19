@@ -19,15 +19,17 @@ object CodacyCoveragePlugin extends AutoPlugin {
     val codacyProjectToken = settingKey[Option[String]]("Your project token.")
     val codacyProjectTokenFile = settingKey[Option[String]]("Path for file containing your project token.")
     val coberturaFile = settingKey[File]("Path for project Cobertura file.")
+    val codacyApiBaseUrl = settingKey[Option[String]]("The base URL for the Codacy API.")
 
     lazy val baseSettings: Seq[Def.Setting[_]] = Seq(
       codacyCoverage := {
         codacyCoverageCommand(state.value, baseDirectory.value, coberturaFile.value,
           crossTarget.value / "coverage-report" / "codacy-coverage.json",
-          codacyProjectToken.value, codacyProjectTokenFile.value)
+          codacyProjectToken.value, codacyProjectTokenFile.value, codacyApiBaseUrl.value)
       },
       codacyProjectToken := None,
       codacyProjectTokenFile := None,
+      codacyApiBaseUrl := None,
       coberturaFile := crossTarget.value / ("coverage-report" + File.separator + "cobertura.xml")
     )
   }
@@ -40,8 +42,10 @@ object CodacyCoveragePlugin extends AutoPlugin {
 
   override val projectSettings = baseSettings
 
+  private val publicApiBaseUrl = "https://www.codacy.com"
+
   private def codacyCoverageCommand(state: State, rootProjectDir: File, coberturaFile: File, codacyCoverageFile: File,
-                                    codacyToken: Option[String], codacyTokenFile: Option[String]): Unit = {
+                                    codacyToken: Option[String], codacyTokenFile: Option[String], codacyApiBaseUrl: Option[String]): Unit = {
     implicit val logger: Logger = state.log
 
     getProjectToken(codacyToken, codacyTokenFile).fold[State] {
@@ -49,7 +53,6 @@ object CodacyCoveragePlugin extends AutoPlugin {
       state.exit(ok = false)
     } {
       projectToken =>
-
         Try {
           new GitClient(rootProjectDir).latestCommitUuid()
         }.toOption.fold[State] {
@@ -71,7 +74,10 @@ object CodacyCoveragePlugin extends AutoPlugin {
 
                 logger.info(s"Uploading coverage data...")
 
-                new CodacyAPIClient().postCoverageFile(projectToken, commitUuid, codacyCoverageFile).fold[State](
+                new CodacyAPIClient().postCoverageFile(projectToken,
+                                                       commitUuid,
+                                                       codacyCoverageFile,
+                                                       getApiBaseUrl(codacyApiBaseUrl)).fold[State](
                   error => {
                     logger.error(s"Failed to upload data. Reason: $error")
                     state.exit(ok = false)
@@ -83,6 +89,14 @@ object CodacyCoveragePlugin extends AutoPlugin {
             }
         }
     }
+  }
+
+  private def getApiBaseUrl(codacyApiBaseUrl: Option[String]): String = {
+    // Check for an environment variable to override the API URL.
+    // If it doesn't exist, try the build options or default to the public API.
+    sys.env.get("CODACY_API_BASE_URL")
+      .orElse(codacyApiBaseUrl)
+      .getOrElse(publicApiBaseUrl)
   }
 
   private def getProjectToken(codacyProjectToken: Option[String], codacyProjectTokenFile: Option[String]) = {
