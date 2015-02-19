@@ -15,7 +15,7 @@ class CodacyAPIClient {
 
   def postCoverageFile(projectToken: String, commitUuid: String, file: File): Either[String, String] = {
     //quick-fix load codacy instance from environment instead of only hardcoded.
-    val host = sys.env.get("CODACY_INSTANCE_URL").getOrElse("https://www.codacy.com/")
+    val host = sys.env.get("CODACY_INSTANCE_URL").getOrElse("https://www.codacy.com")
     val url = s"$host/api/coverage/$projectToken/$commitUuid"
 
     val responseOpt = Try {
