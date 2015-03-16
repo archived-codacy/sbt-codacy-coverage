@@ -66,7 +66,11 @@ class CoberturaParser(coberturaFile: File, rootProject: File) {
         key -> value
     }
 
-    CodacyCoverageFileReport(sourceFilename.stripPrefix(rootProjectDir), fileHit, lineHitMap)
+    CodacyCoverageFileReport(sanitiseFilename(sourceFilename), fileHit, lineHitMap)
+  }
+
+  private def sanitiseFilename(filename: String): String = {
+    filename.stripPrefix(rootProjectDir).replaceAll( """\\/""", "/")
   }
 
 }
