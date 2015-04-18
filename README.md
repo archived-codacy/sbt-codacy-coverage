@@ -4,7 +4,9 @@
 sbt plugin for uploading Scala code coverage to Codacy https://www.codacy.com
 
 ```
-sbt-codacy-coverage will only work with sbt 0.13.5 and higher.
+sbt-codacy-coverage will only work with:
+  * sbt 0.13.5 and higher
+  * Java JRE 7 and higher
 ```
 
 ## Setup
@@ -74,3 +76,8 @@ sbt codacyCoverage
 
 Failing tests can be caused by the usage of macros in Scala 2.10.
 Consider upgrading to Scala 2.11 for full macro support.
+
+## Java 6
+
+Due to a limitation in Java 6, the plugin is unable to establish a connection to codacy.com.
+You can run [this script](https://gist.github.com/mrfyda/51cdf48fa0722593db6a) after `sbt codacyCoverage` to upload the generated report to Codacy.
