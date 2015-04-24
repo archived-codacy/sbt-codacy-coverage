@@ -2,7 +2,7 @@ import Dependencies._
 
 name := "sbt-codacy-coverage"
 
-version := "1.0.4"
+version := "1.1.0"
 
 scalaVersion := "2.10.4"
 
@@ -19,9 +19,7 @@ resolvers ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  playJson,
-  playWs,
-  jGit,
+  codacyScalaApi,
   scalaTest
 )
 

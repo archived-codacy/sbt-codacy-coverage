@@ -2,10 +2,10 @@ package com.codacy.parsers
 
 import java.io.File
 
-import com.codacy.api.{CodacyCoverageFileReport, CodacyCoverageReport}
+import com.codacy.api.{CoverageFileReport, CoverageReport}
 
 import scala.xml.factory.XMLLoader
-import scala.xml.{SAXParser, Elem, Node}
+import scala.xml.{Elem, Node, SAXParser}
 
 object XML extends XMLLoader[Elem] {
   override def parser: SAXParser = {
@@ -26,7 +26,7 @@ class CoberturaParser(coberturaFile: File, rootProject: File) {
 
   val rootProjectDir = rootProject.getAbsolutePath + File.separator
 
-  def generateReport(): CodacyCoverageReport = {
+  def generateReport(): CoverageReport = {
     val total = (elem \\ "coverage" \ "@line-rate").headOption.map {
       total =>
         (total.text.toFloat * 100).toInt
@@ -39,10 +39,10 @@ class CoberturaParser(coberturaFile: File, rootProject: File) {
         lineCoverage(file)
     }.toSeq
 
-    CodacyCoverageReport(total, filesCoverage)
+    CoverageReport(total, filesCoverage)
   }
 
-  private def lineCoverage(sourceFilename: String): CodacyCoverageFileReport = {
+  private def lineCoverage(sourceFilename: String): CoverageFileReport = {
     val file = (elem \\ "class").filter {
       n: Node =>
         (n \\ "@filename").text == sourceFilename
@@ -66,7 +66,7 @@ class CoberturaParser(coberturaFile: File, rootProject: File) {
         key -> value
     }
 
-    CodacyCoverageFileReport(sanitiseFilename(sourceFilename), fileHit, lineHitMap)
+    CoverageFileReport(sanitiseFilename(sourceFilename), fileHit, lineHitMap)
   }
 
   private def sanitiseFilename(filename: String): String = {

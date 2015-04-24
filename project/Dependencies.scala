@@ -2,9 +2,7 @@ import sbt._
 
 object Dependencies {
 
-  lazy val playJson = "com.typesafe.play" %% "play-json" % "2.3.8"
-  lazy val playWs = "com.typesafe.play" %% "play-ws" % "2.3.8"
-  lazy val jGit = "org.eclipse.jgit" % "org.eclipse.jgit" % "3.6.2.201501210735-r"
+  lazy val codacyScalaApi = "com.codacy" %% "codacy-api-scala" % "1.0.0"
   lazy val scalaTest = "org.scalatest" %% "scalatest" % "2.2.4" % "test"
 
 }
