@@ -54,6 +54,8 @@ object CodacyCoveragePlugin extends AutoPlugin {
         val codacyClient = new CodacyClient(getApiBaseUrl(codacyApiBaseUrl), Some(projectToken))
         val coverageServices = new CoverageServices(codacyClient)
 
+        logger.info(s"Uploading coverage data...")
+
         coverageServices.sendReport(commitUUID, report) match {
           case requestResponse if requestResponse.hasError =>
             logger.error(s"Failed to upload data. Reason: ${requestResponse.message}")
