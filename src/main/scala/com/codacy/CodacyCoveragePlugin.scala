@@ -2,6 +2,7 @@ package com.codacy
 
 import java.io.File
 
+import com.codacy.api.Language
 import com.codacy.api.client.CodacyClient
 import com.codacy.api.helpers.FileHelper
 import com.codacy.api.service.CoverageServices
@@ -46,7 +47,7 @@ object CodacyCoveragePlugin extends AutoPlugin {
     FileHelper.withTokenAndCommit(codacyToken) {
       case (projectToken, commitUUID) =>
 
-        val reader = new CoberturaParser(coberturaFile, rootProjectDir)
+        val reader = new CoberturaParser(Language.Scala, coberturaFile, rootProjectDir)
         val report = reader.generateReport()
 
         FileHelper.writeJsonToFile(codacyCoverageFile, report)

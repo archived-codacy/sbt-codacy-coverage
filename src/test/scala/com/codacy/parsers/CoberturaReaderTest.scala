@@ -2,13 +2,14 @@ package com.codacy.parsers
 
 import java.io.File
 
+import com.codacy.api.Language
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpec}
 
 import scala.collection.mutable.ArrayBuffer
 
 class CoberturaReaderTest extends WordSpec with BeforeAndAfterAll with Matchers {
 
-  val reader = new CoberturaParser(new File("src/test/resources/test_cobertura.xml"), new File(""))
+  val reader = new CoberturaParser(Language.Scala, new File("src/test/resources/test_cobertura.xml"), new File(""))
 
   "CoberturaReader" when {
     "reading a Cobertura file" should {

@@ -2,7 +2,7 @@ package com.codacy.parsers
 
 import java.io.File
 
-import com.codacy.api.{CoverageFileReport, CoverageReport}
+import com.codacy.api.{Language, CoverageFileReport, CoverageReport}
 
 import scala.xml.factory.XMLLoader
 import scala.xml.{Elem, Node, SAXParser}
@@ -20,7 +20,7 @@ object XML extends XMLLoader[Elem] {
   }
 }
 
-class CoberturaParser(coberturaFile: File, rootProject: File) {
+class CoberturaParser(language: Language.Value, coberturaFile: File, rootProject: File) {
 
   val elem = XML.loadFile(coberturaFile)
 
@@ -39,7 +39,7 @@ class CoberturaParser(coberturaFile: File, rootProject: File) {
         lineCoverage(file)
     }.toSeq
 
-    CoverageReport(total, filesCoverage)
+    CoverageReport(language, total, filesCoverage)
   }
 
   private def lineCoverage(sourceFilename: String): CoverageFileReport = {
