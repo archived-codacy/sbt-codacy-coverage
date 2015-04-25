@@ -6,7 +6,7 @@ import com.codacy.api.Language
 import com.codacy.api.client.CodacyClient
 import com.codacy.api.helpers.FileHelper
 import com.codacy.api.service.CoverageServices
-import com.codacy.parsers.CoberturaParser
+import com.codacy.parsers.implementation.CoberturaParser
 import sbt.Keys._
 import sbt._
 
