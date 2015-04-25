@@ -47,7 +47,7 @@ object CodacyCoveragePlugin extends AutoPlugin {
     FileHelper.withTokenAndCommit(codacyToken) {
       case (projectToken, commitUUID) =>
 
-        val reader = new CoberturaParser(Language.Scala, coberturaFile, rootProjectDir)
+        val reader = new CoberturaParser(Language.Scala, rootProjectDir, coberturaFile)
         val report = reader.generateReport()
 
         FileHelper.writeJsonToFile(codacyCoverageFile, report)

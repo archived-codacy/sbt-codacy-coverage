@@ -20,6 +20,7 @@ resolvers ++= Seq(
 
 libraryDependencies ++= Seq(
   codacyScalaApi,
+  coverageParser,
   scalaTest
 )
 
