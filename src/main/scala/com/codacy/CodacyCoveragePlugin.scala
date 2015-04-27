@@ -24,6 +24,7 @@ object CodacyCoveragePlugin extends AutoPlugin {
           crossTarget.value / "coverage-report" / "codacy-coverage.json",
           codacyProjectToken.value, codacyApiBaseUrl.value)
       },
+      aggregate in codacyCoverage := false,
       codacyProjectToken := None,
       codacyApiBaseUrl := None,
       coberturaFile := crossTarget.value / ("coverage-report" + File.separator + "cobertura.xml")
