@@ -53,12 +53,12 @@ object CodacyCoveragePlugin extends AutoPlugin {
 
         FileHelper.writeJsonToFile(codacyCoverageFile, report)
 
-        val codacyClient = new CodacyClient(getApiBaseUrl(codacyApiBaseUrl), Some(projectToken))
+        val codacyClient = new CodacyClient(getApiBaseUrl(codacyApiBaseUrl), projectToken = Some(projectToken))
         val coverageServices = new CoverageServices(codacyClient)
 
         logger.info(s"Uploading coverage data...")
 
-        coverageServices.sendReport(commitUUID, report) match {
+        coverageServices.sendReport(commitUUID, Language.Scala, report) match {
           case requestResponse if requestResponse.hasError =>
             logger.error(s"Failed to upload data. Reason: ${requestResponse.message}")
             state.exit(ok = false)
