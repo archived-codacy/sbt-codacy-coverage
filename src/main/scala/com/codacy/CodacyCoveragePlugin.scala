@@ -39,7 +39,7 @@ object CodacyCoveragePlugin extends AutoPlugin {
 
   override val projectSettings = baseSettings
 
-  private val publicApiBaseUrl = "https://www.codacy.com"
+  private val publicApiBaseUrl = "https://api.codacy.com"
 
   private def codacyCoverageCommand(state: State, rootProjectDir: File, coberturaFile: File, codacyCoverageFile: File,
                                     codacyToken: Option[String], codacyApiBaseUrl: Option[String]): Unit = {
