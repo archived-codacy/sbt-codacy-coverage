@@ -20,7 +20,7 @@ resolvers += "Typesafe Repository" at "https://repo.typesafe.com/typesafe/releas
 
 addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.3.1")
 
-addSbtPlugin("com.codacy" % "sbt-codacy-coverage" % "1.2.0")
+addSbtPlugin("com.codacy" % "sbt-codacy-coverage" % "1.2.1")
 ```
 
 Coverage should now be enabled for your project. 
