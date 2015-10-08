@@ -46,7 +46,7 @@ sbt coverageAggregate
 
 ## Updating Codacy
 
-To update Codacy, you will need your project integration token. You can find the token in Project -> Settings -> Integrations -> Coverage.
+To update Codacy, you will need your project integration token. You can find the token in Project -> Settings -> Integrations -> Add Integration -> Project API.
 
 Then set it in your terminal, replacing %Project_Token% with your own token:
 
