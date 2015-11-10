@@ -1,19 +1,20 @@
 # sbt-codacy-coverage
-[![Codacy Badge](https://www.codacy.com/project/badge/1146fb14534e427493469ba4b0459430)](https://www.codacy.com)
+[![Circle CI](https://circleci.com/gh/codacy/sbt-codacy-coverage/tree/master.svg?style=shield)](https://circleci.com/gh/codacy/sbt-codacy-coverage/tree/master)
+[![Codacy Badge](https://www.codacy.com/project/badge/grade/1146fb14534e427493469ba4b0459430)](https://www.codacy.com/app/Codacy/sbt-codacy-coverage)
+[![Codacy Badge](https://www.codacy.com/project/badge/coverage/1146fb14534e427493469ba4b0459430)](https://www.codacy.com/app/Codacy/sbt-codacy-coverage)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.codacy/sbt-codacy-coverage/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.codacy/sbt-codacy-coverage)
 
 sbt plugin for uploading Scala code coverage to Codacy https://www.codacy.com
 
-```
-sbt-codacy-coverage will only work with:
+`sbt-codacy-coverage` will only work with:
   * sbt 0.13.5 and higher
   * Java JRE 7 and higher
-```
 
 ## Setup
 
-Codacy assumes that coverage is previously configured for your project. As an example, we will configure a Scala project with the scoverage sbt plugin.
+Codacy assumes that coverage is previously configured for your project. As an example, we will configure a Scala project with the `scoverage` sbt plugin.
 
-To start, add the scoverage and Codacy sbt plugins into your plugins.sbt file:
+To start, add the `scoverage` and Codacy sbt plugins into your plugins.sbt file:
 
 ```sbt
 resolvers += "Typesafe Repository" at "https://repo.typesafe.com/typesafe/releases/"
@@ -23,14 +24,14 @@ addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.3.1")
 addSbtPlugin("com.codacy" % "sbt-codacy-coverage" % "1.2.1")
 ```
 
-Coverage should now be enabled for your project. 
+Coverage should now be enabled for your project.
 To run the tests and create coverage files, type in your terminal:
 
 ```sbt
 sbt clean coverage test
 ```
 
-This will create coverage reports for all your tests in your project. 
+This will create coverage reports for all your tests in your project.
 In order to export scoverage report files into cobertura compatible files, just type:
 
 ```sbt
