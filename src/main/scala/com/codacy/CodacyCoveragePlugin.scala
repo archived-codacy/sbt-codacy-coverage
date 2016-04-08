@@ -45,7 +45,7 @@ object CodacyCoveragePlugin extends AutoPlugin {
                                     codacyToken: Option[String], codacyApiBaseUrl: Option[String]): Unit = {
     implicit val logger: Logger = state.log
 
-    FileHelper.withTokenAndCommit(codacyToken) {
+    FileHelper.withTokenAndCommit(codacyToken, commitUUID = sys.env.get("CI_COMMIT")) {
       case (projectToken, commitUUID) =>
 
         val reader = new CoberturaParser(Language.Scala, rootProjectDir, coberturaFile)
