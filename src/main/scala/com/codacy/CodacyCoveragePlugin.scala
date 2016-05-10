@@ -60,7 +60,7 @@ object CodacyCoveragePlugin extends AutoPlugin {
 
         coverageServices.sendReport(commitUUID, Language.Scala, report) match {
           case requestResponse if requestResponse.hasError =>
-            logger.error(s"Failed to upload data. Reason: ${requestResponse.message}")
+            sys.error(s"Failed to upload data. Reason: ${requestResponse.message}")
             state.exit(ok = false)
             Left(requestResponse.message)
           case requestResponse =>
@@ -69,7 +69,7 @@ object CodacyCoveragePlugin extends AutoPlugin {
         }
     } match {
       case Left(error) =>
-        logger.error(error)
+        sys.error(error)
         state.exit(ok = false)
       case _ =>
     }
