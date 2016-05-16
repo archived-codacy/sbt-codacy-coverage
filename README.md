@@ -62,6 +62,11 @@ Next, simply run the Codacy sbt plugin. It will find the current commit and send
 sbt codacyCoverage
 ```
 
+> Note: To send coverage in the enterprise version you should:
+```
+export CODACY_API_BASE_URL=<Codacy_instance_URL>:16006
+```
+
 ## Configure your build server
 
 After setting up and testing the coverage, you're ready to setup your build server to automate your process.
