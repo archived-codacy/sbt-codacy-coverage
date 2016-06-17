@@ -1,18 +1,17 @@
 package com.codacy
 
-import java.io.File
-
-import com.codacy.api.Language
 import com.codacy.api.client.CodacyClient
 import com.codacy.api.helpers.FileHelper
+import com.codacy.api.Language
 import com.codacy.api.service.CoverageServices
 import com.codacy.parsers.implementation.CoberturaParser
+import java.io.File
 import sbt.Keys._
 import sbt._
 
 object CodacyCoveragePlugin extends AutoPlugin {
 
-  object autoImport {
+  object AutoImport {
     val codacyCoverage = taskKey[Unit]("Upload coverage reports to Codacy.")
     val codacyProjectToken = settingKey[Option[String]]("Your project token.")
     val coberturaFile = settingKey[File]("Path for project Cobertura file.")
@@ -31,11 +30,9 @@ object CodacyCoveragePlugin extends AutoPlugin {
     )
   }
 
-  import com.codacy.CodacyCoveragePlugin.autoImport._
+  import com.codacy.CodacyCoveragePlugin.AutoImport._
 
-  //override def requires = ScoverageSbtPlugin
-
-  override def trigger = allRequirements
+  override def trigger: PluginTrigger = allRequirements
 
   override val projectSettings = baseSettings
 
@@ -53,7 +50,7 @@ object CodacyCoveragePlugin extends AutoPlugin {
 
         FileHelper.writeJsonToFile(codacyCoverageFile, report)
 
-        val codacyClient = new CodacyClient(getApiBaseUrl(codacyApiBaseUrl), projectToken = Some(projectToken))
+        val codacyClient = new CodacyClient(apiBaseUrl(codacyApiBaseUrl), projectToken = Some(projectToken))
         val coverageServices = new CoverageServices(codacyClient)
 
         logger.info(s"Uploading coverage data...")
@@ -75,7 +72,7 @@ object CodacyCoveragePlugin extends AutoPlugin {
     }
   }
 
-  private def getApiBaseUrl(codacyApiBaseUrl: Option[String]): Option[String] = {
+  private def apiBaseUrl(codacyApiBaseUrl: Option[String]): Option[String] = {
     // Check for an environment variable to override the API URL.
     // If it doesn't exist, try the build options or default to the public API.
     sys.env.get("CODACY_API_BASE_URL")
