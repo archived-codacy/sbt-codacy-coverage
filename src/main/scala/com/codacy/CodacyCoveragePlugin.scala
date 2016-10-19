@@ -1,11 +1,12 @@
 package com.codacy
 
+import java.io.File
+
+import com.codacy.api.Language
 import com.codacy.api.client.CodacyClient
 import com.codacy.api.helpers.FileHelper
-import com.codacy.api.Language
 import com.codacy.api.service.CoverageServices
 import com.codacy.parsers.implementation.CoberturaParser
-import java.io.File
 import sbt.Keys._
 import sbt._
 
@@ -42,7 +43,17 @@ object CodacyCoveragePlugin extends AutoPlugin {
                                     codacyToken: Option[String], codacyApiBaseUrl: Option[String]): Unit = {
     implicit val logger: Logger = state.log
 
-    FileHelper.withTokenAndCommit(codacyToken, commitUUID = sys.env.get("CI_COMMIT")) {
+    val commitUUID =
+      sys.env.get("CI_COMMIT") orElse
+      sys.env.get("TRAVIS_PULL_REQUEST_SHA") orElse
+      sys.env.get("TRAVIS_COMMIT") orElse
+      sys.env.get("DRONE_COMMIT") orElse
+      sys.env.get("CIRCLE_SHA1") orElse
+      sys.env.get("CI_COMMIT_ID") orElse
+      sys.env.get("WERCKER_GIT_COMMIT")
+        .filter(_.trim.nonEmpty)
+
+    FileHelper.withTokenAndCommit(codacyToken, commitUUID) {
       case (projectToken, commitUUID) =>
 
         val reader = new CoberturaParser(Language.Scala, rootProjectDir, coberturaFile)

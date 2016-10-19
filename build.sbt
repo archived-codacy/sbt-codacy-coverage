@@ -2,7 +2,7 @@ import Dependencies._
 
 name := "sbt-codacy-coverage"
 
-version := "1.2.2"
+version := "0.0.1-SNAPSHOT"
 
 scalaVersion := "2.10.4"
 
