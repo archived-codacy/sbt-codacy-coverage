@@ -21,6 +21,7 @@ resolvers ++= Seq(
 libraryDependencies ++= Seq(
   codacyScalaApi,
   coverageParser,
+  `rapture-json-circe`,
   scalaTest
 )
 

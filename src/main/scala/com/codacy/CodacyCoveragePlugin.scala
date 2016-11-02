@@ -2,15 +2,23 @@ package com.codacy
 
 import java.io.File
 
-import com.codacy.api.Language
-import com.codacy.api.client.CodacyClient
+import com.codacy.api.client.{CodacyClient, FailedResponse, SuccessfulResponse}
 import com.codacy.api.helpers.FileHelper
 import com.codacy.api.service.CoverageServices
+import com.codacy.api.{CoverageFileReport, Language}
 import com.codacy.parsers.implementation.CoberturaParser
+import rapture.json.{Json, _}
 import sbt.Keys._
 import sbt._
 
 object CodacyCoveragePlugin extends AutoPlugin {
+
+  implicit val (ast, stringParser, jsonSerializer) = {
+    import rapture.json.jsonBackends.circe._
+    (implicitJsonAst, implicitJsonStringParser, circeJValueSerializer)
+  }
+
+  private implicit lazy val ser = implicitly[Serializer[CoverageFileReport, Json]]
 
   object AutoImport {
     val codacyCoverage = taskKey[Unit]("Upload coverage reports to Codacy.")
@@ -45,13 +53,13 @@ object CodacyCoveragePlugin extends AutoPlugin {
 
     val commitUUID =
       sys.env.get("CI_COMMIT") orElse
-      sys.env.get("TRAVIS_PULL_REQUEST_SHA") orElse
-      sys.env.get("TRAVIS_COMMIT") orElse
-      sys.env.get("DRONE_COMMIT") orElse
-      sys.env.get("CIRCLE_SHA1") orElse
-      sys.env.get("CI_COMMIT_ID") orElse
-      sys.env.get("WERCKER_GIT_COMMIT")
-        .filter(_.trim.nonEmpty)
+        sys.env.get("TRAVIS_PULL_REQUEST_SHA") orElse
+        sys.env.get("TRAVIS_COMMIT") orElse
+        sys.env.get("DRONE_COMMIT") orElse
+        sys.env.get("CIRCLE_SHA1") orElse
+        sys.env.get("CI_COMMIT_ID") orElse
+        sys.env.get("WERCKER_GIT_COMMIT")
+          .filter(_.trim.nonEmpty)
 
     FileHelper.withTokenAndCommit(codacyToken, commitUUID) {
       case (projectToken, commitUUID) =>
@@ -67,12 +75,12 @@ object CodacyCoveragePlugin extends AutoPlugin {
         logger.info(s"Uploading coverage data...")
 
         coverageServices.sendReport(commitUUID, Language.Scala, report) match {
-          case requestResponse if requestResponse.hasError =>
-            sys.error(s"Failed to upload data. Reason: ${requestResponse.message}")
+          case FailedResponse(error) =>
+            sys.error(s"Failed to upload data. Reason: $error")
             state.exit(ok = false)
-            Left(requestResponse.message)
-          case requestResponse =>
-            logger.success(s"Coverage data uploaded. ${requestResponse.message}")
+            Left(error)
+          case SuccessfulResponse(response) =>
+            logger.success(s"Coverage data uploaded. ${response.success}")
             Right(state)
         }
     } match {
