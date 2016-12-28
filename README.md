@@ -84,6 +84,19 @@ sbt codacyCoverage
 Failing tests can be caused by the usage of macros in Scala 2.10.
 Consider upgrading to Scala 2.11 for full macro support.
 
+## Troubleshooting
+
+1. Builds from forks are failing on Coverage?
+
+If you are using an automated CI that also runs builds from forks but does not have access to the
+project token to send coverage you should protect the coverage step in your configuration to avoid
+the build failure.
+
+**Example**
+```
+if [[ -n "$CODACY_PROJECT_TOKEN" ]]; then sbt codacyCoverage; else echo "Skipped coverage reporting since no token was found"; fi
+```
+
 ## Java 6
 
 Due to a limitation in Java 6, the plugin is unable to establish a connection to codacy.com.
