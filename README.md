@@ -67,6 +67,31 @@ sbt codacyCoverage
 export CODACY_API_BASE_URL=<Codacy_instance_URL>:16006
 ```
 
+### CommitUUID Detection
+
+Codacy automatically detects the CommitUUID from several sources:
+
+**Environment Variables**
+
+* CI_COMMIT
+* TRAVIS_PULL_REQUEST_SHA
+* TRAVIS_COMMIT
+* DRONE_COMMIT
+* CIRCLE_SHA1
+* CI_COMMIT_ID
+* WERCKER_GIT_COMMIT
+
+**Git directory**
+
+* If it finds a git directory it will get current commit.
+
+**Force CommitUUID**
+
+* You may want to enforce a specific commitUUID with:
+```
+sbt 'set codacyCommit := "mycommituuid"' codacyCoverage
+```
+
 ## Configure your build server
 
 After setting up and testing the coverage, you're ready to setup your build server to automate your process.
