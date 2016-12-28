@@ -25,16 +25,18 @@ object CodacyCoveragePlugin extends AutoPlugin {
     val codacyProjectToken = settingKey[Option[String]]("Your project token.")
     val coberturaFile = settingKey[File]("Path for project Cobertura file.")
     val codacyApiBaseUrl = settingKey[Option[String]]("The base URL for the Codacy API.")
+    val codacyCommit = settingKey[Option[String]]("The commit uuid of the coverage.")
 
     lazy val baseSettings: Seq[Def.Setting[_]] = Seq(
       codacyCoverage := {
         codacyCoverageCommand(state.value, baseDirectory.value, coberturaFile.value,
           crossTarget.value / "coverage-report" / "codacy-coverage.json",
-          codacyProjectToken.value, codacyApiBaseUrl.value)
+          codacyProjectToken.value, codacyApiBaseUrl.value, codacyCommit.value)
       },
       aggregate in codacyCoverage := false,
       codacyProjectToken := None,
       codacyApiBaseUrl := None,
+      codacyCommit := None,
       coberturaFile := crossTarget.value / ("coverage-report" + File.separator + "cobertura.xml")
     )
   }
@@ -48,20 +50,20 @@ object CodacyCoveragePlugin extends AutoPlugin {
   private val publicApiBaseUrl = "https://api.codacy.com"
 
   private def codacyCoverageCommand(state: State, rootProjectDir: File, coberturaFile: File, codacyCoverageFile: File,
-                                    codacyToken: Option[String], codacyApiBaseUrl: Option[String]): Unit = {
+                                    codacyToken: Option[String], codacyApiBaseUrl: Option[String],
+                                    sbtCodacyCommit: Option[String]): Unit = {
     implicit val logger: Logger = state.log
 
-    val commitUUID =
-      sys.env.get("CI_COMMIT") orElse
-        sys.env.get("TRAVIS_PULL_REQUEST_SHA") orElse
-        sys.env.get("TRAVIS_COMMIT") orElse
-        sys.env.get("DRONE_COMMIT") orElse
-        sys.env.get("CIRCLE_SHA1") orElse
-        sys.env.get("CI_COMMIT_ID") orElse
-        sys.env.get("WERCKER_GIT_COMMIT")
-          .filter(_.trim.nonEmpty)
+    val commitUUIDOpt = sbtCodacyCommit orElse
+      getNonEmptyEnv("CI_COMMIT") orElse
+      getNonEmptyEnv("TRAVIS_PULL_REQUEST_SHA") orElse
+      getNonEmptyEnv("TRAVIS_COMMIT") orElse
+      getNonEmptyEnv("DRONE_COMMIT") orElse
+      getNonEmptyEnv("CIRCLE_SHA1") orElse
+      getNonEmptyEnv("CI_COMMIT_ID") orElse
+      getNonEmptyEnv("WERCKER_GIT_COMMIT")
 
-    FileHelper.withTokenAndCommit(codacyToken, commitUUID) {
+    FileHelper.withTokenAndCommit(codacyToken, commitUUIDOpt) {
       case (projectToken, commitUUID) =>
 
         val reader = new CoberturaParser(Language.Scala, rootProjectDir, coberturaFile)
@@ -91,12 +93,16 @@ object CodacyCoveragePlugin extends AutoPlugin {
     }
   }
 
+  private def getNonEmptyEnv(key: String): Option[String] = {
+    sys.env.get(key).filter(_.trim.nonEmpty)
+  }
+
   private def apiBaseUrl(codacyApiBaseUrl: Option[String]): Option[String] = {
     // Check for an environment variable to override the API URL.
     // If it doesn't exist, try the build options or default to the public API.
-    sys.env.get("CODACY_API_BASE_URL")
-      .orElse(codacyApiBaseUrl)
-      .orElse(Some(publicApiBaseUrl))
+    codacyApiBaseUrl orElse
+      getNonEmptyEnv("CODACY_API_BASE_URL") orElse
+      Some(publicApiBaseUrl)
   }
 
 }
