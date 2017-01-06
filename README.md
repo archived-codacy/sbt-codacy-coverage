@@ -20,8 +20,10 @@ resolvers += "Typesafe Repository" at "https://repo.typesafe.com/typesafe/releas
 
 addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.3.5")
 
-addSbtPlugin("com.codacy" % "sbt-codacy-coverage" % "1.3.7")
+addSbtPlugin("com.codacy" % "sbt-codacy-coverage" % "<latest-version>")
 ```
+
+> Check latest version in https://maven-badges.herokuapp.com/maven-central/com.codacy/sbt-codacy-coverage
 
 Coverage should now be enabled for your project.
 To run the tests and create coverage files, type in your terminal:
