@@ -1,7 +1,7 @@
 # sbt-codacy-coverage
 [![Codacy Badge](https://api.codacy.com/project/badge/grade/a3a8d4988a9045d58578b6c844feefbf)](https://www.codacy.com/app/Codacy/sbt-codacy-coverage)
 [![Circle CI](https://circleci.com/gh/codacy/sbt-codacy-coverage/tree/master.svg?style=shield)](https://circleci.com/gh/codacy/sbt-codacy-coverage/tree/master)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.codacy/sbt-codacy-coverage/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.codacy/sbt-codacy-coverage)
+[![Maven Central](https://img.shields.io/maven-central/v/com.codacy/sbt-codacy-coverage.svg)](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.codacy%22%20AND%20a%3A%22sbt-codacy-coverage%22)
 
 sbt plugin for uploading Scala code coverage to Codacy https://www.codacy.com
 
