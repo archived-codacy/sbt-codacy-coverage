@@ -4,7 +4,13 @@ name := "sbt-codacy-coverage"
 
 version := "0.0.1-SNAPSHOT"
 
-scalaVersion := "2.10.4"
+crossSbtVersions := Seq("0.13.16", "1.0.1")
+
+scalaVersion := (CrossVersion partialVersion (sbtVersion in pluginCrossBuild).value match {
+  case Some((0, 13)) => "2.10.6"
+  case Some((1, _)) => "2.12.2"
+  case _ => sys error s"Unhandled sbt version ${(sbtVersion in pluginCrossBuild).value}"
+})
 
 scalacOptions := Seq("-deprecation", "-feature", "-unchecked", "-Ywarn-adapted-args", "-Xlint", "-Xfatal-warnings")
 
@@ -21,8 +27,7 @@ resolvers ++= Seq(
 libraryDependencies ++= Seq(
   codacyScalaApi,
   coverageParser,
-  `rapture-json-circe`,
-  scalaTest
+  `rapture-json-circe`
 )
 
 organization := "com.codacy"
@@ -35,7 +40,7 @@ publishMavenStyle := true
 
 publishArtifact in Test := false
 
-pomIncludeRepository := { _ => false}
+pomIncludeRepository := { _ => false }
 
 publishTo := {
   val nexus = "https://oss.sonatype.org/"
