@@ -1,5 +1,5 @@
 # sbt-codacy-coverage
-[![Codacy Badge](https://api.codacy.com/project/badge/grade/a3a8d4988a9045d58578b6c844feefbf)](https://www.codacy.com/app/Codacy/sbt-codacy-coverage)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/2344b5717c1848bd9af5380fb713d592)](https://www.codacy.com/app/Codacy/sbt-codacy-coverage?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=codacy/sbt-codacy-coverage&amp;utm_campaign=Badge_Grade)
 [![Circle CI](https://circleci.com/gh/codacy/sbt-codacy-coverage/tree/master.svg?style=shield)](https://circleci.com/gh/codacy/sbt-codacy-coverage/tree/master)
 [![Maven Central](https://img.shields.io/maven-central/v/com.codacy/sbt-codacy-coverage.svg)](https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.codacy%22%20AND%20a%3A%22sbt-codacy-coverage%22)
 
