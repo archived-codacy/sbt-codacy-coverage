@@ -119,6 +119,17 @@ If you are using an automated CI that also runs builds from forks but does not h
 project token to send coverage you should protect the coverage step in your configuration to avoid
 the build failure.
 
+2. Failing to send coverage 
+
+> Message: `Failed to upload data. Reason: not found`
+
+This issue is usually related to bad authentication. Make sure you are using the correct token.
+Most time you will want to use the Project API Token as described in [Updating Codacy](#updating-codacy).
+
+If you decide to use the Account API Token, you will need to provide extra details about your project.
+You need to make sure to provide the project owner username and the project name on Codacy
+as part of the identification when pushing coverage.
+
 **Example**
 ```
 if [[ -n "$CODACY_PROJECT_TOKEN" ]]; then sbt codacyCoverage; else echo "Skipped coverage reporting since no token was found"; fi
