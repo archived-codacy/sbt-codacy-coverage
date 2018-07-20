@@ -27,7 +27,8 @@ resolvers ++= Seq(
 libraryDependencies ++= Seq(
   codacyScalaApi,
   coverageParser,
-  `rapture-json-circe`
+  raptureJsonCirce,
+  javaxActivation
 )
 
 organization := "com.codacy"
