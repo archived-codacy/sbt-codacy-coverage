@@ -5,20 +5,13 @@ import java.io.File
 import com.codacy.api.client.{CodacyClient, FailedResponse, SuccessfulResponse}
 import com.codacy.api.helpers.FileHelper
 import com.codacy.api.service.CoverageServices
-import com.codacy.api.{CoverageFileReport, Language}
 import com.codacy.parsers.implementation.CoberturaParser
-import rapture.json.{Json, _}
+import com.codacy.plugins.api.languages.Languages.Scala
 import sbt.Keys._
-import sbt._
+import sbt.{Def, _}
 
 object CodacyCoveragePlugin extends AutoPlugin {
 
-  implicit val (ast, stringParser, jsonSerializer) = {
-    import rapture.json.jsonBackends.circe._
-    (implicitJsonAst, implicitJsonStringParser, circeJValueSerializer)
-  }
-
-  private implicit lazy val ser = implicitly[Serializer[CoverageFileReport, Json]]
 
   object AutoImport {
     val codacyCoverage = taskKey[Unit]("Upload coverage reports to Codacy.")
@@ -29,9 +22,14 @@ object CodacyCoveragePlugin extends AutoPlugin {
 
     lazy val baseSettings: Seq[Def.Setting[_]] = Seq(
       codacyCoverage := {
-        codacyCoverageCommand(state.value, baseDirectory.value, coberturaFile.value,
-          crossTarget.value / "coverage-report" / "codacy-coverage.json",
-          codacyProjectToken.value, codacyApiBaseUrl.value, codacyCommit.value)
+        codacyCoverageCommand(
+          state = state.value,
+          rootProjectDir = baseDirectory.value,
+          coberturaFile = coberturaFile.value,
+          codacyCoverageFile = crossTarget.value / "coverage-report" / "codacy-coverage.json",
+          codacyToken = codacyProjectToken.value,
+          codacyApiBaseUrl = codacyApiBaseUrl.value,
+          sbtCodacyCommit = codacyCommit.value)
       },
       aggregate in codacyCoverage := false,
       codacyProjectToken := None,
@@ -45,7 +43,7 @@ object CodacyCoveragePlugin extends AutoPlugin {
 
   override def trigger: PluginTrigger = allRequirements
 
-  override val projectSettings = baseSettings
+  override val projectSettings: Seq[Def.Setting[_]] = baseSettings
 
   private val publicApiBaseUrl = "https://api.codacy.com"
 
@@ -67,7 +65,10 @@ object CodacyCoveragePlugin extends AutoPlugin {
     FileHelper.withTokenAndCommit(codacyToken, commitUUIDOpt) {
       case (projectToken, commitUUID) =>
 
-        val reader = new CoberturaParser(Language.Scala, rootProjectDir, coberturaFile)
+        val reader = new CoberturaParser(
+          language = Scala,
+          rootProject = rootProjectDir,
+          coverageReport = coberturaFile)
         val report = reader.generateReport()
 
         FileHelper.writeJsonToFile(codacyCoverageFile, report)
@@ -77,7 +78,7 @@ object CodacyCoveragePlugin extends AutoPlugin {
 
         logger.info(s"Uploading coverage data...")
 
-        coverageServices.sendReport(commitUUID, Language.Scala.toString, report) match {
+        coverageServices.sendReport(commitUUID, Scala.toString, report) match {
           case FailedResponse(error) =>
             sys.error(s"Failed to upload data. Reason: $error")
             state.exit(ok = false)
