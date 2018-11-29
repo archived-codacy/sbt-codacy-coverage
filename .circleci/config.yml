@@ -1,0 +1,116 @@
+# CircleCI 2.0 configuration file
+version: 2
+
+# Re-usable blocks to reduce boilerplate in job definitions.
+references:
+  host_environment_defaults: &host_environment_defaults
+    # Customize the JVM maximum heap limit
+    JAVA_OPTS: -Xmx3200m
+
+  docker_environment_defaults: &docker_environment_defaults
+    # Customize the JVM to read correct memory values
+    JAVA_OPTS: '-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:MaxRAMFraction=1'
+
+  default_java_job: &default_java_job
+    docker:
+    - image: circleci/openjdk:8-jdk
+      environment:
+        <<: *docker_environment_defaults
+    environment:
+      <<: *host_environment_defaults
+    working_directory: ~/workdir
+
+  restore_dependencies: &restore_dependencies
+    restore_cache:
+      keys:
+      - sbt-ivy2-dependencies-1.0.11-{{ checksum "/tmp/dependencies.cache.tmp" }}-extras
+      - sbt-ivy2-dependencies-1.0.11-{{ checksum "/tmp/dependencies.cache.tmp" }}
+      - sbt-ivy2-dependencies-1.0.11
+
+  clean_sbt_dependencies_cache: &clean_sbt_dependencies_cache
+    run:
+      name: Clean sbt dependencies cache
+      command: |
+        find ~/.sbt -name "*.lock" -delete
+        find ~/.ivy2 -name "ivydata-*.properties" -delete
+
+  setup_dependencies_key: &setup_dependencies_key
+    run:
+      name: Generate cache key
+      command: |
+        shasum build.sbt \
+          project/plugins.sbt \
+          project/build.properties \
+          project/Dependencies.scala > /tmp/dependencies.cache.tmp
+
+jobs:
+  checkout_compile:
+    <<: *default_java_job
+    steps:
+    - checkout
+    - attach_workspace:
+        at: ~/workdir
+    - *setup_dependencies_key
+    - *restore_dependencies
+    - run:
+        name: Resolve dependencies
+        command: |
+          sbt update
+    - run:
+        name: Compile
+        command: ./scripts/compile.sh
+    - *clean_sbt_dependencies_cache
+    - save_cache:
+        paths:
+        - ~/.ivy2
+        - ~/.sbt
+        - ~/.m2
+        - ~/.coursier
+        key: sbt-ivy2-dependencies-1.0.11-{{ checksum "/tmp/dependencies.cache.tmp" }}
+    - persist_to_workspace:
+        root: ~/workdir
+        paths:
+        - target
+        - project/target
+        - project/project/target
+
+  publish_lib:
+    <<: *default_java_job
+    steps:
+    - checkout
+    - attach_workspace:
+        at: ~/workdir
+    - *setup_dependencies_key
+    - *restore_dependencies
+    - run:
+        name: Install AWS CLI
+        command: |
+          sudo apt -y update
+          sudo apt -y install python3-pip
+          sudo python3 -m pip install awscli
+    - run:
+        name: Setup AWS Credentials
+        command: ./scripts/setup-aws-credentials.sh
+    - run:
+        name: Retrieve GPG Keys
+        command: |
+          mkdir -p ~/.gnupg
+          aws s3 sync --profile shared-services --include '*.gpg' s3://$AWS_CREDENTIALS_BUCKET/gnupg/ ~/.gnupg
+    - run:
+        name: Export publish version
+        command: echo 'export PUBLISH_VERSION="2.$CIRCLE_BUILD_NUM"' >> $BASH_ENV
+    - run:
+        name: Publish to Sonatype
+        command: ./scripts/publish_lib.sh $PUBLISH_VERSION
+
+workflows:
+  version: 2
+  test-and-publish:
+    jobs:
+    - checkout_compile
+    - publish_lib:
+        context: CodacyAWS
+        filters:
+          branches:
+            only:
+            - master

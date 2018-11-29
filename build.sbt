@@ -1,4 +1,5 @@
 import Dependencies._
+import sbt.Credentials
 
 name := "sbt-codacy-coverage"
 
@@ -48,6 +49,10 @@ publishTo := {
   else
     Some("releases" at nexus + "service/local/staging/deploy/maven2")
 }
+credentials += Credentials("Sonatype Nexus Repository Manager",
+  "oss.sonatype.org",
+  sys.env.getOrElse("SONATYPE_USER", "username"),
+  sys.env.getOrElse("SONATYPE_PASSWORD", "password"))
 
 startYear := Some(2014)
 
