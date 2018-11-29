@@ -1,6 +1,5 @@
 machine:
-  pre:
-    - mkdir -p $HOME/.sbt/.lib/0.13.16 && wget https://repo.typesafe.com/typesafe/ivy-releases/org.scala-sbt/sbt-launch/0.13.16/sbt-launch.jar -O $HOME/.sbt/.lib/0.13.16/sbt-launch.jar
+  pre: mkdir -p $HOME/.sbt/.lib/0.13.16 && wget https://repo.typesafe.com/typesafe/ivy-releases/org.scala-sbt/sbt-launch/0.13.16/sbt-launch.jar -O $HOME/.sbt/.lib/0.13.16/sbt-launch.jar && mkdir -p $HOME/.sbt/.lib/1.2.3 && wget https://dl.bintray.com/typesafe/ivy-releases/org.scala-sbt/sbt-launch/1.2.3/sbt-launch.jar -O $HOME/.sbt/.lib/1.2.3/sbt-launch.jar
   java:
     version: oraclejdk8
 
