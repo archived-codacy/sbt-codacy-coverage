@@ -12,7 +12,6 @@ import sbt.{Def, _}
 
 object CodacyCoveragePlugin extends AutoPlugin {
 
-
   object AutoImport {
     val codacyCoverage = taskKey[Unit]("Upload coverage reports to Codacy.")
     val codacyProjectToken = settingKey[Option[String]]("Your project token.")
@@ -29,7 +28,8 @@ object CodacyCoveragePlugin extends AutoPlugin {
           codacyCoverageFile = crossTarget.value / "coverage-report" / "codacy-coverage.json",
           codacyToken = codacyProjectToken.value,
           codacyApiBaseUrl = codacyApiBaseUrl.value,
-          sbtCodacyCommit = codacyCommit.value)
+          sbtCodacyCommit = codacyCommit.value
+        )
       },
       aggregate in codacyCoverage := false,
       codacyProjectToken := None,
@@ -47,9 +47,15 @@ object CodacyCoveragePlugin extends AutoPlugin {
 
   private val publicApiBaseUrl = "https://api.codacy.com"
 
-  private def codacyCoverageCommand(state: State, rootProjectDir: File, coberturaFile: File, codacyCoverageFile: File,
-                                    codacyToken: Option[String], codacyApiBaseUrl: Option[String],
-                                    sbtCodacyCommit: Option[String]): Unit = {
+  private def codacyCoverageCommand(
+      state: State,
+      rootProjectDir: File,
+      coberturaFile: File,
+      codacyCoverageFile: File,
+      codacyToken: Option[String],
+      codacyApiBaseUrl: Option[String],
+      sbtCodacyCommit: Option[String]
+  ): Unit = {
     implicit val logger: Logger = state.log
 
     val commitUUIDOpt = sbtCodacyCommit orElse
@@ -64,11 +70,7 @@ object CodacyCoveragePlugin extends AutoPlugin {
 
     FileHelper.withTokenAndCommit(codacyToken, commitUUIDOpt) {
       case (projectToken, commitUUID) =>
-
-        val reader = new CoberturaParser(
-          language = Scala,
-          rootProject = rootProjectDir,
-          coverageReport = coberturaFile)
+        val reader = new CoberturaParser(language = Scala, rootProject = rootProjectDir, coverageReport = coberturaFile)
         val report = reader.generateReport()
 
         FileHelper.writeJsonToFile(codacyCoverageFile, report)
