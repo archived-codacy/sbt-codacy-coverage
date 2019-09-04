@@ -41,3 +41,5 @@ scmInfo := Some(
 pgpPassphrase := Option(System.getenv("SONATYPE_GPG_PASSPHRASE")).map(_.toCharArray)
 
 homepage := Some(url("http://www.github.com/codacy/sbt-codacy-coverage/"))
+
+publicMvnPublish
