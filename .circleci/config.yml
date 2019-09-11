@@ -34,7 +34,7 @@ workflows:
           name: publish
           context: CodacyAWS
           cmd: |
-            sbt ";retrieveGPGKeys;+publishSigned;sonatypeReleaseAll"
+            sbt ";retrieveGPGKeys;^publishSigned;sonatypeReleaseAll"
           requires:
             - test
           filters:
