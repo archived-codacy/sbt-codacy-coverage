@@ -1,3 +1,7 @@
+# Deprecated
+
+This repository is no longer maintained. As an alternative, check [codacy-coverage-reporter](https://github.com/codacy/codacy-coverage-reporter) to send your test coverage results to your Codacy dashboard.
+
 # sbt-codacy-coverage
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/2344b5717c1848bd9af5380fb713d592)](https://www.codacy.com/app/Codacy/sbt-codacy-coverage?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=codacy/sbt-codacy-coverage&amp;utm_campaign=Badge_Grade)
 [![Circle CI](https://circleci.com/gh/codacy/sbt-codacy-coverage/tree/master.svg?style=shield)](https://circleci.com/gh/codacy/sbt-codacy-coverage/tree/master)
